@@ -4,7 +4,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
     return false
   })
 
-describe("DemoQA - Elements", () => {
+describe("Elements", () => {
     beforeEach(() => {
         cy.viewport(1563, 960)
         cy.visit("https://demoqa.com/")
