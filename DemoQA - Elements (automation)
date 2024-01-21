@@ -1,0 +1,136 @@
+Cypress.on('uncaught:exception', (err, runnable) => {
+    // returning false here prevents Cypress from
+    // failing the test
+    return false
+  })
+
+describe("DemoQA - Elements", () => {
+    beforeEach(() => {
+        cy.viewport(1563, 960)
+        cy.visit("https://demoqa.com/")
+        cy.get(':nth-child(1) > :nth-child(1) > .card-up').click()
+        // cy.get(':nth-child(1) > .group-header > .header-wrapper').click()
+    })
+
+    it("Text Box", () => {
+    
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-0').click()
+        cy.get('#userName').type("Harry Potter")
+        cy.get('#userEmail').type("chosenone1980@hogwarts.com")
+        cy.get('#currentAddress').type("First Year Gryffindor Room")
+        cy.get('#permanentAddress').type("Cupboard under the stairs, 4 Privet Drive, Little Whinging, Surrey")
+        cy.get('#submit').click()
+        cy.get('.border').should('contain.text', "Name")
+       
+    })
+
+    it("Check Box", () => {
+        //This test should be carried out through the use of the command 'check'
+        //but the web interface does not allow for its use
+        //so I use the command 'click' instead
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-1').click()
+        cy.get('.rct-checkbox').click()
+        cy.get('#result').should('have.text', 'You have selected :homedesktopnotescommandsdocumentsworkspacereactangularveuofficepublicprivateclassifiedgeneraldownloadswordFileexcelFile')
+        
+    })
+
+    it("Radio button", () => {
+
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-2').click()
+        cy.get('.col-md-6 > :nth-child(2) > :nth-child(2)').click()
+        cy.get('.col-md-6 > :nth-child(2) > :nth-child(3)').click()
+        cy.get('.text-success').should('have.text', "Impressive")
+        cy.get('.custom-control.disabled input[type="radio"]').should('be.disabled')
+
+    })
+
+    it("Web Tables", () => {
+
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-3').click()
+        cy.get('.ReactTable').should('contain.text', 'Alden')
+        cy.get('#searchBox').type("cierra")
+        cy.get('.ReactTable').should('not.contain.text', 'Alden')
+        cy.get('.ReactTable').should('contain.text', 'Cierra')
+        cy.get('#searchBox').clear()
+        cy.get('#addNewRecordButton').click()
+        cy.get('#firstName').type("Hermione")
+        cy.get('#lastName').type("Granger")
+        cy.get('#userEmail').type("ilovebooks@hogwarts.com")
+        cy.get('#age').type("11")
+        cy.get('#salary').type("100")
+        cy.get('#department').type("Know-It-All")
+        cy.get('#submit').click()
+        cy.get('#searchBox').type("Hermione")
+        cy.get('.ReactTable').should('contain.text', 'Hermione')
+        cy.get('#searchBox').clear()
+        cy.get(':nth-child(5) > .rt-resizable-header-content').click()
+        cy.get('.rt-tbody > :nth-child(1) > .rt-tr > [style="flex: 40 0 auto; width: 40px; max-width: 40px;"]').should('contain.text', "11")
+
+    })
+
+    it("Buttons", () => {
+
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-4').click()
+        cy.get('#doubleClickBtn').dblclick()
+        cy.get('#doubleClickMessage').should('have.text', "You have done a double click")
+        cy.get('#rightClickBtn').rightclick()
+        cy.get('#rightClickMessage').should('have.text', "You have done a right click")
+        cy.contains(/^Click Me$/).click()
+        cy.get('#dynamicClickMessage').should('have.text', "You have done a dynamic click")
+
+    })
+
+    it("Links", () => {
+
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-5').click()
+        //Not testable through Cypress as this involves API requests, it might be later tested through Postman
+
+    })
+
+    it("Broken Links - Images", () => {
+
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-6').click()
+        //Image should be valid
+        cy.get(':nth-child(2) > [src="/images/Toolsqa.jpg"]')
+            .should('be.visible')
+            .and('have.prop', 'naturalWidth')
+            .should('be.greaterThan', 0)
+        //Image is broken
+        cy.get('[src="/images/Toolsqa_1.jpg"]')
+            .should('be.visible')
+            .and('have.prop', 'naturalWidth')
+            .should('not.be.greaterThan', 0)
+        //Link should be valid but my test times out
+                // cy.get('[href="http://demoqa.com"]').click()
+                // cy.wait(10000)
+                // cy.go('back')
+        //Link is broken, test should fail and result in a 500 code, but my connection times out
+                // cy.get('[href="http://the-internet.herokuapp.com/status_codes/500"]').click()
+        
+    })
+
+    it("Upload and Download", () => {
+
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-7').click()
+        //This button should download a file
+        cy.get('#downloadButton').click()
+        //This button should open File Explorer but from then on, the upload can only be done manually
+        cy.get('#uploadFile').click()
+
+    })
+
+    it("Dynamic Properties", () => {
+
+        cy.scrollTo('bottom')
+        cy.get(':nth-child(1) > .element-list > .menu-list > #item-8').click()
+        cy.get('#enableAfter').should('be.disabled')
+        cy.get('#colorChange').should('have.css', 'color', 'rgb(255, 255, 255)')
+        cy.get('#visibleAfter').should('not.exist')
+        cy.wait(5500)
+        cy.get('#enableAfter').should('be.enabled')
+        cy.get('#colorChange').should('have.css', 'color', 'rgb(220, 53, 69)')
+        cy.get('#visibleAfter').should('be.visible')
+
+    })
+
+})
