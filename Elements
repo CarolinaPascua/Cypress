@@ -9,7 +9,6 @@ describe("Elements", () => {
         cy.viewport(1563, 960)
         cy.visit("https://demoqa.com/")
         cy.get(':nth-child(1) > :nth-child(1) > .card-up').click()
-        // cy.get(':nth-child(1) > .group-header > .header-wrapper').click()
     })
 
     it("Text Box", () => {
@@ -89,7 +88,75 @@ describe("Elements", () => {
     it("Links", () => {
 
         cy.get(':nth-child(1) > .element-list > .menu-list > #item-5').click()
-        //Not testable through Cypress as this involves API requests, it might be later tested through Postman
+        
+        cy.get('.playgound-header').should('have.text', "Links")
+        cy.get('#simpleLink').invoke('removeAttr', 'target').click()
+        cy.get('.home-banner').should('be.visible')
+        cy.go('back')
+        cy.get('.playgound-header').should('have.text', "Links")
+        cy.get('#dynamicLink').invoke('removeAttr', "target").click()
+        cy.get('.home-banner').should('be.visible')
+        cy.go('back')
+
+        cy.get('#created').click()
+        cy.request('https://demoqa.com/created')
+            .should((response) => {
+        expect(response.status).to.eq(201)
+        })
+        cy.get('#linkResponse').should('have.text', "Link has responded with staus 201 and status text Created")
+
+        cy.get('#no-content').click()
+        cy.request('https://demoqa.com/no-content')
+            .should((response) => {
+        expect(response.status).to.eq(204)
+        })
+        cy.get('#linkResponse').should('have.text', "Link has responded with staus 204 and status text No Content")
+
+        cy.get('#moved').click()
+        cy.request('https://demoqa.com/moved')
+            .should((response) => {
+        expect(response.status).to.eq(301)
+        })
+        cy.get('#linkResponse').should('have.text', "Link has responded with staus 301 and status text Moved Permanently")
+
+        cy.get('#bad-request').click()
+        cy.request({
+            url: 'https://demoqa.com/bad-request',
+            failOnStatusCode: false
+        })
+            .should((response) => {
+        expect(response.status).to.eq(400)
+        })
+        cy.get('#linkResponse').should('have.text', "Link has responded with staus 400 and status text Bad Request")
+
+        cy.get('#unauthorized').click()
+        cy.request({
+            url: 'https://demoqa.com/unauthorized',
+            failOnStatusCode: false
+        })
+            .should((response) => {
+        expect(response.status).to.eq(401)
+        })
+        cy.get('#linkResponse').should('have.text', "Link has responded with staus 401 and status text Unauthorized")
+
+        cy.get('#forbidden').click()
+        cy.request({
+            url: 'https://demoqa.com/forbidden',
+            failOnStatusCode: false})
+            .should((response) => {
+        expect(response.status).to.eq(403)
+        })
+        cy.get('#linkResponse').should('have.text', "Link has responded with staus 403 and status text Forbidden")
+
+        cy.get('#invalid-url').click()
+        cy.request({
+            url: 'https://demoqa.com/invalid-url',
+            failOnStatusCode: false
+        })
+            .should((response) => {
+        expect(response.status).to.eq(404)
+        })
+        cy.get('#linkResponse').should('have.text', "Link has responded with staus 404 and status text Not Found")
 
     })
 
@@ -118,10 +185,9 @@ describe("Elements", () => {
     it("Upload and Download", () => {
 
         cy.get(':nth-child(1) > .element-list > .menu-list > #item-7').click()
-        //This button should download a file
         cy.get('#downloadButton').click()
-        //This button should open File Explorer but from then on, the upload can only be done manually
-        cy.get('#uploadFile').click()
+        cy.get('#uploadFile').selectFile("stitch-icon.ico")
+        cy.get('#uploadedFilePath').should('have.text', "C:\fakepath\stitch-icon.ico")
 
     })
 
