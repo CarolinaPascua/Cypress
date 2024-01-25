@@ -1,0 +1,86 @@
+Cypress.on('uncaught:exception', (err, runnable) => {
+    // returning false here prevents Cypress from
+    // failing the test
+    return false
+  })
+
+describe("Alerts, Frame & Windows", () => {
+    beforeEach(() => {
+
+        cy.viewport(1200, 1200)
+        cy.visit("https://demoqa.com/")
+        cy.get('.category-cards > :nth-child(3)').click()
+
+    })
+
+    it("Browser Windows", () => {
+
+        cy.get(':nth-child(3) > .element-list > .menu-list > #item-0').click()
+                    //Removing the target attribute should avoid opening the link on a new tab
+                    //but since the attributes are not visible upon inspection, this does not work
+                    //so I will assert that the link that is opened in a new tab and a new window is correct
+        cy.get('#tabButton').click()
+        cy.intercept("https://demoqa.com/sample").as('tab')
+        cy.wait("@tab").then(res => {
+            expect(res.response.url).eq("https://demoqa.com/sample")
+        })
+        cy.get('#windowButton').click()
+        cy.intercept("https://demoqa.com/sample").as('window')
+        cy.wait("@window").then(res => {
+            expect(res.response.url).eq("https://demoqa.com/sample")
+        })
+        
+
+    })
+
+    it("Alerts", () => {
+
+        cy.get(':nth-child(3) > .element-list > .menu-list > #item-1').click()
+                    //Alert pop-ups should appear when clicking the different buttons
+                    //but they do not appear or cannot be selected for automation,
+                    //so I will write the next steps as a comment
+        cy.get('#alertButton').click()
+                    //A pop up that reads "You clicked a button" should appear
+        cy.get('#timerAlertButton').click()
+        cy.wait(5000)
+                    //A pop up that reads "This alert appeared after 5 seconds" should appear after 5 seconds
+        cy.get('#confirmButton').click()
+                    //A pop up that asks for confirmation with the buttons "Ok" and "Cancel" should appear
+        cy.get('#confirmResult').should('have.text', "You selected Ok")
+        cy.get('#promtButton').click()
+                    //A pop-up with the prompt "Please enter your name" and a textbox should appear
+                    //After entering a name and clicking on "Ok" on the pop-up, the following should happen:
+        // cy.get('#promptResult').should('have.text', "You entered <name>")
+
+    })
+
+    it("Frames", () => {
+
+        cy.get(':nth-child(3) > .element-list > .menu-list > #item-2').click()
+        cy.get('#frame1').its('0.contentDocument.body').should('contain', "This is a sample page")
+        cy.get('#frame2').its('0.contentDocument.body').should('contain', "This is a sample page")
+        
+    })
+
+    it("Nested Frames", () => {
+
+        cy.get(':nth-child(3) > .element-list > .menu-list > #item-3').click()
+        cy.get('#frame1').its('0.contentDocument.body').should('contain', "Parent frame")
+        cy.get('#frame1').its('0.contentDocument.body').should('not.be.empty')
+
+    })
+
+    it("Modal Dialogs", () => {
+
+        cy.get(':nth-child(3) > .element-list > .menu-list > #item-4').click()
+        cy.get('#showSmallModal').click()
+        cy.get('.modal-body').should('have.text', "This is a small modal. It has very less content")
+        cy.get('#closeSmallModal').click()
+        cy.get('#showLargeModal').click()
+        cy.get('p').should('have.text',"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.")
+        cy.get('#closeLargeModal').click()
+
+    })
+
+    
+})
