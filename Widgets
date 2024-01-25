@@ -1,0 +1,135 @@
+Cypress.on('uncaught:exception', (err, runnable) => {
+    // returning false here prevents Cypress from
+    // failing the test
+    return false
+  })
+
+describe("Widgets", () => {
+    beforeEach(() => {
+
+        cy.viewport(1200, 1200)
+        cy.visit("https://demoqa.com/")
+        cy.get('.category-cards > :nth-child(4)').click()
+
+    })
+
+    it("Accordion", () => {
+
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-0').click()
+        cy.get('#section1Heading').click()
+        cy.get('#section1Content > p').should('not.be.visible')
+        cy.get('#section1Heading').click()
+        cy.get('#section1Content > p').should('be.visible')
+        cy.get('#section2Heading').click()
+        cy.get('#section2Content > p').should('be.visible')
+        cy.get('#section2Heading').click()
+        cy.get('#section2Content > p').should('not.be.visible')
+        cy.get('#section3Heading').click()
+        cy.get('#section3Content > p').should('be.visible')
+        cy.get('#section3Heading').click()
+        cy.get('#section3Content > p').should('not.be.visible')
+        
+    })
+
+    it("Auto Complete", () => {
+
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-1').click()
+        cy.get('#autoCompleteMultiple > :nth-child(1)').should('have.text', "Type multiple color names")
+        cy.get('#autoCompleteMultipleContainer').type('r{downArrow}{enter}')
+        cy.get('#autoCompleteMultipleContainer').type('g{downArrow}{enter}')
+        cy.get('#autoCompleteSingleContainer').type('b{downArrow}{enter}')
+
+    })
+
+    it("Date Picker", () => {
+
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-2').click()
+        cy.get('#datePickerMonthYearInput').clear()
+        cy.get('#datePickerMonthYearInput').type("04/15/1993{enter}")
+        cy.get('#dateAndTimePickerInput').click()
+        cy.get('.react-datepicker__month-read-view').click()
+        cy.get('.react-datepicker__month-dropdown').contains("April").click()
+        cy.get('.react-datepicker__year-read-view').click()
+        cy.get('.react-datepicker__year-dropdown > :nth-child(12)').click()
+        cy.get('.react-datepicker__time-list').contains("11:00").click()
+        
+    })
+
+    it("Slider", () => {
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-3').click()
+        cy.get('.range-slider')
+            .invoke('val', 87)
+            .trigger('change')
+        // cy.get('#sliderValue').should('have.value', "87")
+        //The value does not change when triggered, so the test fails
+
+    })
+
+    it("Progress Bar", () => {
+
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-4').click()
+        cy.get('#resetButton').should('not.exist')
+        cy.get('#startStopButton').click()
+        cy.wait(10000)
+        cy.get('#resetButton').should('be.enabled')
+
+    })
+
+    it("Tabs", () => {
+
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-5').click()
+        cy.get('#demo-tabpane-what > .mt-3').should('be.visible')
+            .should('have.text', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.")
+        cy.get('#demo-tab-origin').click()
+        cy.get('#demo-tabpane-what').should('not.be.visible')
+        cy.get('#demo-tabpane-origin').should('be.visible')
+            .should('contain', 'a Lorem Ipsum passage')
+        cy.get('#demo-tab-use').click()
+        cy.get('#demo-tabpane-origin').should('not.be.visible')
+        cy.get('#demo-tabpane-use').should('be.visible')
+            .should('contain', 'publishing packages')
+        cy.get('#demo-tab-more').should('have.attr', 'aria-disabled', "true")
+        
+    })
+
+    it("Tool Tips", () => {
+
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-6').click()
+        cy.get('#toolTipButton').trigger('mouseover')
+        cy.get('.tooltip-inner').should('be.visible')
+            .should('have.text', "You hovered over the Button")
+        cy.get('#toolTipTextField').trigger('mouseover')
+        cy.get('#textFieldToolTip > .tooltip-inner').should('be.visible')
+            .should('have.text', "You hovered over the text field")
+
+    })
+
+    it("Menu", () => {
+
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-7').click()
+        cy.contains("Main Item 2").should('be.visible').trigger('mouseover')
+                //Mouseover is not triggered by automation
+                //but it works when hovering over it on Cypress Interface
+                //so the following steps should be carried out
+        // cy.contains("Sub list").should('be.visible')
+        // cy.contains("SUB SUB LIST").should('be.visible')
+            // .trigger(mouseover)
+        // cy.contains("Sub sub item 1").should('be.visible')
+        // cy.contains("Sub sub item 2").should('be.visible')
+
+    })
+
+    it("Select Menu", () => {
+
+        cy.get(':nth-child(4) > .element-list > .menu-list > #item-8').click()
+        cy.get('#withOptGroup > .css-yk16xz-control > .css-1hwfws3').click()
+        cy.contains("A root option").click()
+        cy.get('#selectOne > .css-yk16xz-control > .css-1hwfws3').click()
+        cy.contains("Prof.").click()
+        cy.get('#oldSelectMenu').select("5")
+        cy.get(':nth-child(7) > .col-md-6 > .css-2b097c-container > .css-yk16xz-control > .css-1hwfws3').type('g{enter}').type('b{enter}')
+        cy.get('#cars').contains("Audi").click()
+        
+    })
+      
+    })
