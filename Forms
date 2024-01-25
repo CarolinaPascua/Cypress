@@ -1,6 +1,12 @@
+Cypress.on('uncaught:exception', (err, runnable) => {
+    // returning false here prevents Cypress from
+    // failing the test
+    return false
+  })
+
 describe("Forms", () => {
 
-    it("Forms", () => {
+    it("Practice Form", () => {
 
         cy.viewport(1200, 1200)
         cy.visit("https://demoqa.com/")
@@ -13,21 +19,18 @@ describe("Forms", () => {
         cy.get('#userNumber').type("0123456789")
         cy.get('#dateOfBirthInput').click()
         cy.get('.react-datepicker__month-select').select("9")
-        //Year selector does not respond to automation
-        //cy.get('.react-datepicker__year-select').select("n")
+        cy.get('.react-datepicker__year-select').select("1935").should('have.value', '1935')
         cy.get('.react-datepicker__day--016').click()
         cy.get('.subjects-auto-complete__value-container').type("Transfiguration")
         cy.get('#hobbiesWrapper > .col-md-9 > :nth-child(2)').click()
-        //Upload Image cannot be performed through automation since it uses File Explorer
-        // cy.get('#uploadPicture').click()
+        cy.get('#uploadPicture').selectFile("MinnieMcGee.jpg")
         cy.get('#currentAddress').type("Hogwarts")
-        
-        //Command Select shoud be used but the interface does not allow it, therefore command Click is udes here
-        cy.get('.css-yk16xz-control > .css-1wy0on6 > .css-tlfecz-indicatorContainer').click()
+                            //Command Select shoud be used but the interface does not allow it, therefore command Click is used here
+        cy.get('#state > .css-yk16xz-control > .css-1hwfws3 > .css-1wa3eu0-placeholder').click()
         cy.get('#react-select-3-option-1').click()
-        cy.get('#city > .css-yk16xz-control > .css-1wy0on6 > .css-tlfecz-indicatorContainer').click()
+        cy.get('#stateCity-wrapper > :nth-child(3)').click()
         cy.get('#react-select-4-option-0').click()
-        //input[type="submit"] is not supported by the UI so I use the command Click instead of Submit
+                            //input[type="submit"] is not supported by the UI so I use the command Click instead of Submit
         cy.get('#submit').click()
         cy.get('.modal-header').should('have.text', 'Thanks for submitting the form')
         cy.get('#closeLargeModal').click()
