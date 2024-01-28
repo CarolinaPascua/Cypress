@@ -1,0 +1,207 @@
+describe("Interactions", () => {
+       
+    beforeEach(() => {
+
+        cy.viewport(1200, 1200)
+        cy.visit("https://demoqa.com/")
+        cy.get('.category-cards > :nth-child(5)').click()
+
+    })
+
+    it("Sortable", () => {
+
+        cy.get(':nth-child(5) > .element-list > .menu-list > #item-0').click()
+        cy.get('.vertical-list-container > :nth-child(3)').should('have.text', "Three")
+        cy.get('.vertical-list-container > :nth-child(3)').trigger("mouseover")
+            .trigger("mousedown", {which: 1})
+            .trigger("mousemove", { x: 0, y: 100, force: true })
+            .trigger("mouseup", {which: 1, force: true })
+            cy.get('.vertical-list-container > :nth-child(3)').should('not.have.text', "Three")
+
+
+        cy.get('#demo-tab-grid').click()
+        cy.get('.create-grid > :nth-child(5)').should('have.text', "Five")
+        cy.get('.create-grid > :nth-child(5)').trigger("mouseover")
+        .trigger("mousedown", { which: 1})
+        .trigger("mousemove", { x: 150, y: 100, force: true })
+        .trigger("mouseup", { which: 1, force: true })
+        cy.get('.create-grid > :nth-child(5)').should('not.have.text', "Five")
+        
+    })
+
+    it("Selectable", () => {
+
+        cy.get(':nth-child(5) > .element-list > .menu-list > #item-1').click()
+        cy.get('#verticalListContainer > :nth-child(1)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#verticalListContainer > :nth-child(2)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#verticalListContainer > :nth-child(3)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#verticalListContainer > :nth-child(4)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#verticalListContainer > :nth-child(2)').click()
+        cy.get('#verticalListContainer > :nth-child(4)').click()
+        cy.get('#verticalListContainer > :nth-child(1)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#verticalListContainer > :nth-child(2)').should('have.css', 'background-color', 'rgb(0, 123, 255)')
+        cy.get('#verticalListContainer > :nth-child(3)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#verticalListContainer > :nth-child(4)').should('have.css', 'background-color', 'rgb(0, 123, 255)')
+        cy.get('#demo-tab-grid').click()
+        cy.get('#row1 > :nth-child(1)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#row2 > :nth-child(2)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#row3 > :nth-child(3)').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+        cy.get('#row1 > :nth-child(1)').click()
+        cy.get('#row2 > :nth-child(2)').click()
+        cy.get('#row3 > :nth-child(3)').click()
+        cy.get('#row1 > :nth-child(1)').should('have.css', 'background-color', 'rgb(0, 123, 255)')
+        cy.get('#row2 > :nth-child(2)').should('have.css', 'background-color', 'rgb(0, 123, 255)')
+        cy.get('#row3 > :nth-child(3)').should('have.css', 'background-color', 'rgb(0, 123, 255)')
+
+    })
+
+    it("Resizable", () => {
+
+        cy.get(':nth-child(5) > .element-list > .menu-list > #item-2').click()
+        cy.get('#resizableBoxWithRestriction').should('have.attr', 'style')
+            .and('include', 'width: 200px')
+            .and('include', 'height: 200px')
+        cy.get('#resizableBoxWithRestriction > .react-resizable-handle').trigger("mouseover")
+            .trigger("mousedown", 'topLeft', { which: 1})
+            .trigger("mousemove", { x: 100, y: 100, force: true })
+            .trigger("mouseup", { which: 1, force: true })
+            //Triggering the action on different areas of the handle changes by how many pixels the box is resized
+            //In this case, triggering on topLeft is necessary to obtain the resizing that is asked in the input
+        cy.get('#resizableBoxWithRestriction').should('have.attr', 'style')
+            .and('include', 'width: 300px')
+            .and('include', 'height: 300px')
+
+        cy.get('#resizable').should('have.attr', 'style')
+            .and('include', 'width: 200px')
+            .and('include', 'height: 200px')
+        cy.get('#resizable > .react-resizable-handle').trigger("mouseover")
+            .trigger("mousedown", 'topLeft', { which: 1})
+            .trigger("mousemove", { x: 400, y: 400, force: true })
+            .trigger("mouseup", { which: 1, force: true })
+            cy.get('#resizable').should('have.attr', 'style')
+                .and('include', 'width: 600px')
+                .and('include', 'height: 600px')
+    
+    })
+
+    it("Droppable", () => {
+
+        cy.get(':nth-child(5) > .element-list > .menu-list > #item-3').click()
+        cy.get('#simpleDropContainer > #droppable').should('have.text', 'Drop here')
+        cy.get('#draggable').trigger('mousedown', { which: 1})
+            .trigger('mousemove', { x: 250, y: 50, force: true })
+            .trigger('mouseup', { which: 1, force: true})
+        cy.get('#simpleDropContainer > #droppable').should('have.text', 'Dropped!')
+
+        cy.get('#droppableExample-tab-accept').click()
+        cy.get('#acceptDropContainer > #droppable').should('have.text', 'Drop here')
+        cy.get('#notAcceptable').trigger('mousedown', { which: 1})
+            .trigger('mousemove', {x: 270, y: 0, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('#acceptDropContainer > #droppable').should('have.text', 'Drop here')
+        cy.get('#notAcceptable').trigger('mousedown', { which: 1})
+            .trigger('mousemove', {x: -250, y: 20, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('#acceptable').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 270, y: 20, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('#acceptDropContainer > #droppable').should('have.text', 'Dropped!')
+
+        cy.get('#droppableExample-tab-preventPropogation').click()
+            //A greedy droppable is one whose parents cannot receive the element that it receives
+        cy.get('#notGreedyDropBox > :nth-child(1)').should('have.text', "Outer droppable")
+        cy.get('#notGreedyInnerDropBox > p').should('have.text', "Inner droppable (not greedy)")
+        cy.get('#dragBox').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x:300, y:80, force: true})
+            .trigger('mouseup', {Which: 1, force: true})
+        cy.get('#notGreedyDropBox > :nth-child(1)').should('have.text', "Dropped!")
+        cy.get('#notGreedyInnerDropBox > p').should('have.text', "Dropped!")
+        cy.get('#greedyDropBox > :nth-child(1)').should('have.text', "Outer droppable")
+        cy.get('#greedyDropBoxInner > p').should('have.text', "Inner droppable (greedy)")
+        cy.get('#dragBox').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x:20, y:330, force: true})
+            .trigger('mouseup', {Which: 1, force: true})
+        cy.get('#greedyDropBox > :nth-child(1)').should('have.text', "Outer droppable")
+        cy.get('#greedyDropBoxInner > p').should('have.text', "Dropped!")
+
+        cy.get('#droppableExample-tab-revertable').click()
+        cy.get('#revertableDropContainer > #droppable').should('have.text', "Drop here")
+        cy.get('#revertable').trigger('mousedown', {which: 1})
+            .trigger('movemove', {x: 300, y: 0, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('#revertableDropContainer > #droppable').should('have.text', "Drop here")
+        cy.get('#notRevertable').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x:300, y:0, force: true})
+            .trigger('mouseup', {Which: 1, force: true})
+        cy.get('#revertableDropContainer > #droppable').should('have.text', "Dropped!")
+
+    })
+
+    it("Draggable", () => {
+
+        cy.get(':nth-child(5) > .element-list > .menu-list > #item-4').click()
+            //Draggable can be dragged to any point on the browser window
+        cy.get('#dragBox').should('have.css', 'position', 'relative')
+        cy.get('#dragBox').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 300, y: 500, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('#dragBox').should('have.css', 'left', '250px')
+        .and('have.css', 'top', '480px')
+        
+        cy.get('#draggableExample-tab-axisRestriction').click()
+            //Draggable can only be dragger on the X axis
+        cy.get('#restrictedX').should('have.css', 'position', 'relative')
+        cy.get('#restrictedX').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 150, y: 0, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('#restrictedX').should('have.css', 'left', '100px')
+            .and('have.css', 'top', '0px')
+            //Draggable can only be dragger on the Y axis
+        cy.get('#restrictedY').should('have.css', 'position', 'relative')
+        cy.get('#restrictedY').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 0, y: 150, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('#restrictedY').should('have.css', 'left', '0px')
+            .and('have.css', 'top', '130px')
+            
+        cy.get('#draggableExample-tab-containerRestriction').click()
+            //Draggable can only be dragged within the box
+        cy.get('#containmentWrapper > .draggable').should('have.css', 'position', 'relative')
+        cy.get('#containmentWrapper > .draggable').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 300, y: 100, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('#containmentWrapper > .draggable').should('have.css', 'left', '225px')
+            .and('have.css', 'top', '70px')
+            //Draggable can only be dragged within its parent
+        cy.get('.ui-widget-header').should('have.css', 'position', 'relative')
+        cy.get('.ui-widget-header').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 100, y: 100, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        cy.get('.ui-widget-header').should('have.css', 'left', '13px')
+        .and('have.css', 'top', '86px')
+
+        cy.get('#draggableExample-tab-cursorStyle').click()
+            //Cursor is centered on the element
+        cy.get('#cursorCenter').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 500, y: 300, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+            //Position after dragging is 56px to the left and 56px above what is asked in the mousemove input
+        cy.get('#cursorCenter').should('have.css', 'left', '444px')
+            .and('have.css', 'top', '244px')
+        cy.get('#cursorTopLeft').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 150, y: 200, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+            //Position after dragging is 5px to the right and 5px below what is asked in the mousemove input
+        cy.get('#cursorTopLeft').should('have.css', 'left', '155px')
+            .and('have.css', 'top', '205px')
+        cy.get('#cursorBottom').trigger('mousedown', {which: 1})
+            .trigger('mousemove', {x: 100, y: 150, force: true})
+            .trigger('mouseup', {which: 1, force: true})
+        //Position after dragging is 50px to the left and 100px above what is asked in the mousemove input
+        cy.get('#cursorBottom').should('have.css', 'left', '50px')
+            .and('have.css', 'top', '50px')
+
+        })
+
+        
+    })
