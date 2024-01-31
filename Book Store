@@ -1,0 +1,85 @@
+Cypress.on('uncaught:exception', (err, runnable) => {
+    // returning false here prevents Cypress from
+    // failing the test
+    return false
+  })
+
+describe("Book Store", () => {
+    
+    beforeEach(() => {
+    
+        cy.viewport(1200, 1200)
+        cy.visit("https://demoqa.com/")
+        cy.get('.category-cards > :nth-child(5)').click()
+        cy.intercept('POST', 'https://demoqa.com/register', (req) => {
+            req.reply({ captchaPassed: true })
+        })
+
+    })
+            
+    it("Login", () => {
+
+        cy.get(':nth-child(6) > .group-header > .header-wrapper > .header-right > .icon').click()
+        cy.get(':nth-child(6) > .element-list > .menu-list > #item-0').click()
+        cy.get('#userName').type("HermioneG")
+        cy.get('#password').type("password")
+        cy.get('#login').click()
+        cy.get('#name').should('have.text', "Invalid username or password!")
+        cy.get('#newUser').click()
+        cy.get('h4').should('have.text', "Register to Book Store")
+        cy.get('#firstname').type("Hermione")
+        cy.get('#lastname').type("Granger")
+        cy.get('#userName').type("HermioneG")
+        cy.get('#password').type("Pass.Word9!")
+            //Wiat 30 seconds in order to be able to pass the reCaptcha manually
+            //Important: do not try to solve the captcha before the last character of the last field has been typed in
+            //or the test gets interrupted
+        cy.wait(30000)
+        cy.get('#register').click()
+        cy.get('#gotologin').click()
+        cy.get('#userName').type("HermioneG")
+        cy.get('#password').type("Pass.Word9!")
+        cy.get('#login').click()
+
+    })
+
+    it("Book Store", () => {
+
+        cy.get(':nth-child(6) > .group-header > .header-wrapper > .header-right > .icon').click()
+        cy.get(':nth-child(6) > .element-list > .menu-list > #item-0').click()
+        cy.get('#userName').type("HermioneG")
+        cy.get('#password').type("Pass.Word9!")
+        cy.get('#login').click()
+        cy.wait(5000)
+        cy.get(':nth-child(6) > .element-list > .menu-list > #item-2').click()
+        cy.get('#searchBox').type("J{enter}")
+        cy.contains("Programming").click()
+        cy.get('#addNewRecordButton').click()
+        cy.get('#searchBox').type("J{enter}")
+        cy.contains("Speaking").click()
+        cy.get('.text-right > #addNewRecordButton').click()
+        cy.get('.text-left > #addNewRecordButton')
+
+    })
+
+    it("Profile", () => {
+
+        cy.get(':nth-child(6) > .group-header > .header-wrapper > .header-right > .icon').click()
+        cy.get(':nth-child(6) > .element-list > .menu-list > #item-0').click()
+        cy.get('#userName').type("HermioneG")
+        cy.get('#password').type("Pass.Word9!")
+        cy.get('#login').click()
+        cy.wait(5000)
+        cy.get(':nth-child(6) > .element-list > .menu-list > #item-3').click()
+        cy.get('#searchBox').type("J")
+        cy.get('.rt-tbody > :nth-child(1) > .rt-tr > :nth-child(2)').should('have.text', "Speaking JavaScript ")
+        cy.get('.buttonWrap > .text-right > #submit').click()
+        cy.get('#closeSmallModal-ok').click()
+        cy.wait(5000)
+        cy.get('#books-wrapper > .text-right > #submit').click()
+        cy.get('h2').should('be.visible')
+
+
+    })
+
+    })
